@@ -48,7 +48,7 @@ public class RecipeAdapter extends BaseAdapter {
 
         recipeTitle.setText(recipe.getTitle());
         recipeDescription.setText(recipe.getDescription());
-        Bitmap image = recipe.getImage();
+        Bitmap image = BitmapUtils.loadBitmapFromFile(recipe.getImagePath());
         if (image != null) {
             recipeImage.setImageBitmap(image);
         } else {
@@ -58,4 +58,3 @@ public class RecipeAdapter extends BaseAdapter {
         return convertView;
     }
 }
-

@@ -1,16 +1,25 @@
 package com.kursovaya.receptorganaizer;
 
-import android.graphics.Bitmap;
-
 public class Recipe {
+    private int id;
     private String title;
     private String description;
-    private Bitmap image;
+    private String imagePath;
 
-    public Recipe(String title, String description, Bitmap image) {
+    public Recipe() {}
+
+    public Recipe(String title, String description, String imagePath) {
         this.title = title;
         this.description = description;
-        this.image = image;
+        this.imagePath = imagePath;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -29,11 +38,11 @@ public class Recipe {
         this.description = description;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

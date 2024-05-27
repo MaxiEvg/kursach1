@@ -2,93 +2,85 @@ package com.kursovaya.receptorganaizer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
-import android.widget.AdapterView;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EDIT_RECIPE = 1;
-    private ListView listView;
+    private RecipeDatabaseHelper dbHelper;
     private RecipeAdapter adapter;
-    private List<Recipe> recipes;
+    private ArrayList<Recipe> recipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recipes = new ArrayList<>();
-        listView = findViewById(R.id.recipeListView);
+        dbHelper = new RecipeDatabaseHelper(this);
+        recipes = dbHelper.getAllRecipes();
+
         adapter = new RecipeAdapter(this, recipes);
+        ListView listView = findViewById(R.id.recipeListView);
         listView.setAdapter(adapter);
 
-        Button addButton = findViewById(R.id.addRecipeButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
-                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
-            }
+        Button fab = findViewById(R.id.addRecipeButton);
+        fab.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
         });
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Recipe recipe = recipes.get(position);
-                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
-                intent.putExtra("recipeIndex", position);
-                intent.putExtra("recipeTitle", recipe.getTitle());
-                intent.putExtra("recipeDescription", recipe.getDescription());
-                intent.putExtra("recipeImage", BitmapUtils.bitmapToByteArray(recipe.getImage()));
-                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Recipe recipe = recipes.get(position);
+            Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+            intent.putExtra("recipeIndex", position);
+            intent.putExtra("recipeId", recipe.getId());
+            intent.putExtra("recipeTitle", recipe.getTitle());
+            intent.putExtra("recipeDescription", recipe.getDescription());
+            intent.putExtra("recipeImagePath", recipe.getImagePath());
+            startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_EDIT_RECIPE) {
-            if (resultCode == RESULT_OK) {
-                int recipeIndex = data.getIntExtra("recipeIndex", -1);
-                String title = data.getStringExtra("recipeTitle");
-                String description = data.getStringExtra("recipeDescription");
-                byte[] byteArray = data.getByteArrayExtra("recipeImage");
-                Bitmap image = null;
-                if (byteArray != null) {
-                    image = BitmapUtils.byteArrayToBitmap(byteArray);
-                }
+        if (requestCode == REQUEST_CODE_EDIT_RECIPE && resultCode == RESULT_OK && data != null) {
+            int recipeIndex = data.getIntExtra("recipeIndex", -1);
+            int recipeId = data.getIntExtra("recipeId", -1);
+            String title = data.getStringExtra("recipeTitle");
+            String description = data.getStringExtra("recipeDescription");
+            String imagePath = data.getStringExtra("recipeImagePath");
 
-                if (recipeIndex == -1) {
-                    // New Recipe
-                    recipes.add(new Recipe(title, description, image));
-                } else {
-                    // Edit existing recipe
-                    Recipe recipe = recipes.get(recipeIndex);
-                    recipe.setTitle(title);
-                    recipe.setDescription(description);
-                    recipe.setImage(image);
-                }
+            Recipe recipe = new Recipe(title, description, imagePath);
+            recipe.setId(recipeId);
 
+            if (recipeIndex == -1) {
+                // New Recipe
+                dbHelper.addRecipe(recipe);
+                recipes.clear();
+                recipes.addAll(dbHelper.getAllRecipes());
+            } else {
+                // Edit existing recipe
+                recipes.set(recipeIndex, recipe);
+                dbHelper.updateRecipe(recipe);
+            }
+
+            adapter.notifyDataSetChanged();
+        } else if (resultCode == Activity.RESULT_FIRST_USER && data != null) {
+            int recipeIndex = data.getIntExtra("recipeIndex", -1);
+            int recipeId = data.getIntExtra("recipeId", -1);
+            if (recipeIndex != -1) {
+                dbHelper.deleteRecipe(recipeId);
+                recipes.remove(recipeIndex);
                 adapter.notifyDataSetChanged();
-            } else if (resultCode == Activity.RESULT_FIRST_USER) {
-                int recipeIndex = data.getIntExtra("recipeIndex", -1);
-                if (recipeIndex != -1) {
-                    recipes.remove(recipeIndex);
-                    adapter.notifyDataSetChanged();
-                }
             }
         }
     }
 }
-
-
-
