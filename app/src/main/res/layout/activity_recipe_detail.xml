@@ -1,62 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/recipeImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="30dp"
-        android:background="@android:color/darker_gray" />
-
-    <EditText
-        android:id="@+id/recipeTitle"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recipeImage"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="4dp"
-        android:hint="Название"
-        android:minHeight="48dp" />
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/recipeDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recipeTitle"
-        android:layout_alignStart="@+id/recipeTitle"
-        android:layout_alignEnd="@+id/recipeTitle"
-        android:layout_marginTop="16dp"
-        android:hint="Описание"
-        android:inputType="textMultiLine"
-        android:minLines="3" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recipeDescription"
-        android:layout_alignStart="@+id/recipeDescription"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="16dp"
-        android:text="Сохранить" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/changeIMG"
+                android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/removeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/recipeDescription"
-        android:layout_alignEnd="@+id/recipeDescription"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="Убрать" />
+            <ImageView
+                android:id="@+id/recipeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/ic_launcher_foreground"
+                android:contentDescription="@string/changeimg"
+                android:cropToPadding="true"
+                android:minWidth="90dp"
+                android:minHeight="90dp"
+                android:scaleType="centerInside"
+                tools:ignore="ImageContrastCheck" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/dishTitle"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/recipeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
+                android:autofillHints=""
+                android:hint="@string/title"
+                android:minHeight="48dp"
+                android:textSize="16sp"
+                tools:ignore="TextFields,VisualLintTextFieldSize" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/AdditionalInfo"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/recipeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:hint="@string/ingredientsAndSteps"
+                android:inputType="textMultiLine"
+                android:minHeight="48dp"
+                android:textSize="16sp"
+                tools:ignore="VisualLintTextFieldSize" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/saveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/Save" />
+
+                <Button
+                    android:id="@+id/removeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/remove" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

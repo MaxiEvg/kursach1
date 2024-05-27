@@ -1,46 +1,37 @@
 package com.kursovaya.receptorganaizer;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
+import android.widget.AdapterView;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EDIT_RECIPE = 1;
-
-    private ArrayList<Recipe> recipes = new ArrayList<>();
+    private ListView listView;
     private RecipeAdapter adapter;
-    private TextView noRecipesText;
+    private List<Recipe> recipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        noRecipesText = findViewById(R.id.noRecipesText);
-        ListView listView = findViewById(R.id.recipeListView);
-        Button addRecipeButton = findViewById(R.id.addRecipeButton);
-
+        recipes = new ArrayList<>();
+        listView = findViewById(R.id.recipeListView);
         adapter = new RecipeAdapter(this, recipes);
         listView.setAdapter(adapter);
 
-        updateNoRecipesText();
-
-        addRecipeButton.setOnClickListener(new View.OnClickListener() {
+        Button addButton = findViewById(R.id.addRecipeButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
@@ -56,20 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("recipeIndex", position);
                 intent.putExtra("recipeTitle", recipe.getTitle());
                 intent.putExtra("recipeDescription", recipe.getDescription());
-                if (recipe.getImage() != null) {
-                    intent.putExtra("recipeImage", BitmapUtils.bitmapToByteArray(recipe.getImage()));
-                }
+                intent.putExtra("recipeImage", BitmapUtils.bitmapToByteArray(recipe.getImage()));
                 startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
             }
         });
-    }
-
-    private void updateNoRecipesText() {
-        if (recipes.isEmpty()) {
-            noRecipesText.setVisibility(View.VISIBLE);
-        } else {
-            noRecipesText.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -108,4 +89,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+
 
