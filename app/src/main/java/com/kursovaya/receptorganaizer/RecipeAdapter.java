@@ -11,8 +11,8 @@ import android.widget.TextView;
 import java.util.List;
 
 public class RecipeAdapter extends BaseAdapter {
-    private Context context;
-    private List<Recipe> recipes;
+    private final Context context;
+    private final List<Recipe> recipes;
 
     public RecipeAdapter(Context context, List<Recipe> recipes) {
         this.context = context;

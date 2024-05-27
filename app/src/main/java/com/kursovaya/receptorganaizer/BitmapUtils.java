@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,8 +27,10 @@ public class BitmapUtils {
 
     public static Bitmap getBitmapFromIntent(Context context, Intent data) throws IOException {
         Uri imageUri = data.getData();
+        assert imageUri != null;
         InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
         Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+        assert imageStream != null;
         imageStream.close();
         return bitmap;
     }
