@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/recipeImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="@android:color/darker_gray" />
+
+    <EditText
+        android:id="@+id/recipeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeImage"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:hint="Название"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/recipeDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeTitle"
+        android:layout_alignStart="@+id/recipeTitle"
+        android:layout_alignEnd="@+id/recipeTitle"
+        android:layout_marginTop="16dp"
+        android:hint="Описание"
+        android:inputType="textMultiLine"
+        android:minLines="3" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeDescription"
+        android:layout_alignStart="@+id/recipeDescription"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:text="Сохранить" />
+
+    <Button
+        android:id="@+id/removeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recipeDescription"
+        android:layout_alignEnd="@+id/recipeDescription"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="Убрать" />
+
+</RelativeLayout>
