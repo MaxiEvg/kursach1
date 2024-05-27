@@ -1,0 +1,3 @@
+com.kursovaya.receptorganaizer.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

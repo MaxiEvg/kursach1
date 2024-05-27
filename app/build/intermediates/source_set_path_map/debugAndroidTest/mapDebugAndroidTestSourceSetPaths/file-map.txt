@@ -1,0 +1,6 @@
+com.kursovaya.receptorganaizer.test.app-core-1.5.0-0 C:\Users\Maxi EVG\.gradle\caches\transforms-3\51ed653df3cbde9a5a5069d6c8eca3e4\transformed\core-1.5.0\res
+com.kursovaya.receptorganaizer.test.app-annotation-experimental-1.4.0-1 C:\Users\Maxi EVG\.gradle\caches\transforms-3\89fcd129e70cf6b6d6766fe02ec3b631\transformed\annotation-experimental-1.4.0\res
+com.kursovaya.receptorganaizer.test.app-androidTest-2 D:\Program Files\Android\project\kursach1\app\build\generated\res\resValues\androidTest\debug
+com.kursovaya.receptorganaizer.test.app-mergeDebugAndroidTestResources-3 D:\Program Files\Android\project\kursach1\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.kursovaya.receptorganaizer.test.app-mergeDebugAndroidTestResources-4 D:\Program Files\Android\project\kursach1\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.kursovaya.receptorganaizer.test.app-debugAndroidTest-5 D:\Program Files\Android\project\kursach1\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources

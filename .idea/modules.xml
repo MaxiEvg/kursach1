@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ReceptOrganaizer.iml" filepath="$PROJECT_DIR$/.idea/modules/ReceptOrganaizer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ReceptOrganaizer.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>

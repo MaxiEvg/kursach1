@@ -1,0 +1,194 @@
+Index: app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.kursovaya.receptorganaizer;\r\n\r\nimport static android.app.Activity.RESULT_OK;\r\n\r\nimport android.app.Activity;\r\nimport android.content.Intent;\r\nimport android.graphics.Bitmap;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.AdapterView;\r\nimport android.widget.Button;\r\nimport android.widget.ListView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport org.jetbrains.annotations.Nullable;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private static final int REQUEST_CODE_EDIT_RECIPE = 1;\r\n\r\n    private ArrayList<Recipe> recipes = new ArrayList<>();\r\n    private RecipeAdapter adapter;\r\n    private TextView noRecipesText;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_main);\r\n\r\n        noRecipesText = findViewById(R.id.noRecipesText);\r\n        ListView listView = findViewById(R.id.recipeListView);\r\n        Button addRecipeButton = findViewById(R.id.addRecipeButton);\r\n\r\n        adapter = new RecipeAdapter(this, recipes);\r\n        listView.setAdapter(adapter);\r\n\r\n        updateNoRecipesText();\r\n\r\n        addRecipeButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);\r\n                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);\r\n            }\r\n        });\r\n\r\n        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {\r\n            @Override\r\n            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {\r\n                Recipe recipe = recipes.get(position);\r\n                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);\r\n                intent.putExtra(\"recipeIndex\", position);\r\n                intent.putExtra(\"recipeTitle\", recipe.getTitle());\r\n                intent.putExtra(\"recipeDescription\", recipe.getDescription());\r\n                if (recipe.getImage() != null) {\r\n                    intent.putExtra(\"recipeImage\", BitmapUtils.bitmapToByteArray(recipe.getImage()));\r\n                }\r\n                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);\r\n            }\r\n        });\r\n    }\r\n\r\n    private void updateNoRecipesText() {\r\n        if (recipes.isEmpty()) {\r\n            noRecipesText.setVisibility(View.VISIBLE);\r\n        } else {\r\n            noRecipesText.setVisibility(View.GONE);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n        if (requestCode == REQUEST_CODE_EDIT_RECIPE) {\r\n            if (resultCode == RESULT_OK) {\r\n                int recipeIndex = data.getIntExtra(\"recipeIndex\", -1);\r\n                String title = data.getStringExtra(\"recipeTitle\");\r\n                String description = data.getStringExtra(\"recipeDescription\");\r\n                byte[] byteArray = data.getByteArrayExtra(\"recipeImage\");\r\n                Bitmap image = null;\r\n                if (byteArray != null) {\r\n                    image = BitmapUtils.byteArrayToBitmap(byteArray);\r\n                }\r\n\r\n                if (recipeIndex == -1) {\r\n                    // New Recipe\r\n                    recipes.add(new Recipe(title, description, image));\r\n                } else {\r\n                    // Edit existing recipe\r\n                    Recipe recipe = recipes.get(recipeIndex);\r\n                    recipe.setTitle(title);\r\n                    recipe.setDescription(description);\r\n                    recipe.setImage(image);\r\n                }\r\n\r\n                adapter.notifyDataSetChanged();\r\n            } else if (resultCode == Activity.RESULT_FIRST_USER) {\r\n                int recipeIndex = data.getIntExtra(\"recipeIndex\", -1);\r\n                if (recipeIndex != -1) {\r\n                    recipes.remove(recipeIndex);\r\n                    adapter.notifyDataSetChanged();\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java b/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java
+--- a/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java	
++++ b/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java	
+@@ -1,11 +1,11 @@
+ package com.kursovaya.receptorganaizer;
+ 
+-import static android.app.Activity.RESULT_OK;
+-
+ import android.app.Activity;
+ import android.content.Intent;
+ import android.graphics.Bitmap;
+ import android.os.Bundle;
++import android.text.Editable;
++import android.text.TextWatcher;
+ import android.view.View;
+ import android.widget.AdapterView;
+ import android.widget.Button;
+@@ -17,6 +17,7 @@
+ import org.jetbrains.annotations.Nullable;
+ 
+ import java.util.ArrayList;
++import java.util.List;
+ 
+ public class MainActivity extends AppCompatActivity {
+ 
+@@ -26,43 +27,51 @@
+     private RecipeAdapter adapter;
+     private TextView noRecipesText;
+ 
+-    @Override
+-    protected void onCreate(Bundle savedInstanceState) {
+-        super.onCreate(savedInstanceState);
+-        setContentView(R.layout.activity_main);
++    public class MainActivity extends AppCompatActivity {
++        private EditText searchEditText;
++        private RecyclerView recyclerView;
++        private RecipeAdapter recipeAdapter;
++        private List<Recipe> recipeList;
++
++        @Override
++        protected void onCreate(Bundle savedInstanceState) {
++            super.onCreate(savedInstanceState);
++            setContentView(R.layout.activity_main);
+ 
+-        noRecipesText = findViewById(R.id.noRecipesText);
+-        ListView listView = findViewById(R.id.recipeListView);
+-        Button addRecipeButton = findViewById(R.id.addRecipeButton);
++            searchEditText = findViewById(R.id.search_edit_text);
++            recyclerView = findViewById(R.id.recipe_recycler_view);
+ 
+-        adapter = new RecipeAdapter(this, recipes);
+-        listView.setAdapter(adapter);
++            // Инициализация списка рецептов
++            recipeList = new ArrayList<>();
++            // Добавьте рецепты в список
+ 
+-        updateNoRecipesText();
++            recipeAdapter = new RecipeAdapter(recipeList);
++            recyclerView.setAdapter(recipeAdapter);
+ 
+-        addRecipeButton.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+-                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
+-            }
+-        });
++            searchEditText.addTextChangedListener(new TextWatcher() {
++                @Override
++                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
++                }
+ 
+-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+-            @Override
+-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+-                Recipe recipe = recipes.get(position);
+-                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+-                intent.putExtra("recipeIndex", position);
+-                intent.putExtra("recipeTitle", recipe.getTitle());
+-                intent.putExtra("recipeDescription", recipe.getDescription());
+-                if (recipe.getImage() != null) {
+-                    intent.putExtra("recipeImage", BitmapUtils.bitmapToByteArray(recipe.getImage()));
++                @Override
++                public void onTextChanged(CharSequence s, int start, int before, int count) {
++                    String query = s.toString().toLowerCase();
++                    List<Recipe> filteredList = new ArrayList<>();
++                    for (Recipe recipe : recipeList) {
++                        if (recipe.getTitle().toLowerCase().contains(query)) {
++                            filteredList.add(recipe);
++                        }
++                    }
++                    recipeAdapter.setRecipeList(filteredList);
+                 }
+-                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
+-            }
+-        });
++
++                @Override
++                public void afterTextChanged(Editable s) {
++                }
++            });
++        }
+     }
++
+ 
+     private void updateNoRecipesText() {
+         if (recipes.isEmpty()) {
+Index: app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.kursovaya.receptorganaizer;\r\n\r\nimport android.content.Context;\r\nimport android.graphics.Bitmap;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ArrayAdapter;\r\nimport android.widget.Filter;\r\nimport android.widget.Filterable;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class RecipeAdapter extends ArrayAdapter<Recipe> implements Filterable {\r\n\r\n    private List<Recipe> originalRecipes;\r\n    private List<Recipe> filteredRecipes;\r\n    private RecipeFilter recipeFilter;\r\n\r\n    public RecipeAdapter(Context context, List<Recipe> recipes) {\r\n        super(context, 0, recipes);\r\n        this.originalRecipes = new ArrayList<>(recipes);\r\n        this.filteredRecipes = recipes;\r\n        getFilter();\r\n    }\r\n\r\n    @Override\r\n    public int getCount() {\r\n        return filteredRecipes.size();\r\n    }\r\n\r\n    @Override\r\n    public Recipe getItem(int position) {\r\n        return filteredRecipes.get(position);\r\n    }\r\n\r\n    @Override\r\n    public long getItemId(int position) {\r\n        return position;\r\n    }\r\n\r\n    @Override\r\n    public View getView(int position, View convertView, ViewGroup parent) {\r\n        if (convertView == null) {\r\n            convertView = LayoutInflater.from(getContext()).inflate(R.layout.recipe_item, parent, false);\r\n        }\r\n\r\n        Recipe recipe = getItem(position);\r\n\r\n        TextView titleTextView = convertView.findViewById(R.id.recipeTitle);\r\n        TextView descriptionTextView = convertView.findViewById(R.id.recipeDescription);\r\n        ImageView imageView = convertView.findViewById(R.id.recipeImage);\r\n\r\n        if (titleTextView != null && recipe != null) {\r\n            titleTextView.setText(recipe.getTitle());\r\n        }\r\n\r\n        if (descriptionTextView != null && recipe != null) {\r\n            descriptionTextView.setText(recipe.getDescription());\r\n        }\r\n\r\n        if (recipe != null && recipe.getImage() != null) {\r\n            imageView.setImageBitmap(recipe.getImage());\r\n        } else {\r\n            imageView.setImageResource(R.drawable.ic_launcher_background); // Default image resource if no image is available\r\n        }\r\n\r\n        return convertView;\r\n    }\r\n\r\n    @Override\r\n    public Filter getFilter() {\r\n        if (recipeFilter == null) {\r\n            recipeFilter = new RecipeFilter();\r\n        }\r\n        return recipeFilter;\r\n    }\r\n\r\n    private class RecipeFilter extends Filter {\r\n        @Override\r\n        protected FilterResults performFiltering(CharSequence constraint) {\r\n            FilterResults results = new FilterResults();\r\n            if (constraint == null || constraint.length() == 0) {\r\n                results.values = originalRecipes;\r\n                results.count = originalRecipes.size();\r\n            } else {\r\n                List<Recipe> filteredList = new ArrayList<>();\r\n                for (Recipe recipe : originalRecipes) {\r\n                    if (recipe.getTitle().toLowerCase().contains(constraint.toString().toLowerCase()) ||\r\n                            recipe.getDescription().toLowerCase().contains(constraint.toString().toLowerCase())) {\r\n                        filteredList.add(recipe);\r\n                    }\r\n                }\r\n                results.values = filteredList;\r\n                results.count = filteredList.size();\r\n            }\r\n            return results;\r\n        }\r\n\r\n        @Override\r\n        protected void publishResults(CharSequence constraint, FilterResults results) {\r\n            filteredRecipes = (List<Recipe>) results.values;\r\n            notifyDataSetChanged();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java b/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java
+--- a/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java	
++++ b/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java	
+@@ -1,7 +1,8 @@
+ package com.kursovaya.receptorganaizer;
+ 
++import static java.security.AccessController.getContext;
++
+ import android.content.Context;
+-import android.graphics.Bitmap;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+@@ -11,17 +12,29 @@
+ import android.widget.ImageView;
+ import android.widget.TextView;
+ 
++import androidx.annotation.NonNull;
++import androidx.recyclerview.widget.RecyclerView;
++
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-public class RecipeAdapter extends ArrayAdapter<Recipe> implements Filterable {
++public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
++    private List<Recipe> recipeList;
+ 
++    public RecipeAdapter(List<Recipe> recipeList) {
++        this.recipeList = recipeList;
++    }
++
++    public void setRecipeList(List<Recipe> recipeList) {
++        this.recipeList = recipeList;
++        notifyDataSetChanged();
++    }
+     private List<Recipe> originalRecipes;
+     private List<Recipe> filteredRecipes;
+     private RecipeFilter recipeFilter;
+ 
+     public RecipeAdapter(Context context, List<Recipe> recipes) {
+-        super(context, 0, recipes);
++        super();
+         this.originalRecipes = new ArrayList<>(recipes);
+         this.filteredRecipes = recipes;
+         getFilter();
+@@ -37,11 +50,27 @@
+         return filteredRecipes.get(position);
+     }
+ 
++    @NonNull
++    @Override
++    public RecipeAdapter.RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
++        return null;
++    }
++
++    @Override
++    public void onBindViewHolder(@NonNull RecipeAdapter.RecipeViewHolder holder, int position) {
++
++    }
++
+     @Override
+     public long getItemId(int position) {
+         return position;
+     }
+ 
++    @Override
++    public int getItemCount() {
++        return 0;
++    }
++
+     @Override
+     public View getView(int position, View convertView, ViewGroup parent) {
+         if (convertView == null) {
