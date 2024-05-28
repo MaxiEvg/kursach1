@@ -1,0 +1,534 @@
+<passage file_path=/app/src/main/res/layout/activity_main.xml>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Поиск по содержмому" />
+
+    <TextView
+        android:id="@+id/noRecipesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Вы ещё не добавляли рецептов"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/recipeListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java>
+    private class RecipeFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            if (constraint == null || constraint.length() == 0) {
+                results.values = originalRecipes;
+                results.count = originalRecipes.size();
+            } else {
+                List<Recipe> filteredList = new ArrayList<>();
+                for (Recipe recipe : originalRecipes) {
+                    if (recipe.getTitle().toLowerCase().contains(constraint.toString().toLowerCase()) ||
+                            recipe.getDescription().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        filteredList.add(recipe);
+                    }
+                }
+                results.values = filteredList;
+                results.count = filteredList.size();
+            }
+            return results;
+        }
+
+        @Override
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java>
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredRecipes = (List<Recipe>) results.values;
+            notifyDataSetChanged();
+        }
+    }
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeAdapter.java>
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (recipeFilter == null) {
+            recipeFilter = new RecipeFilter();
+        }
+        return recipeFilter;
+    }
+
+    private class RecipeFilter extends Filter {
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java>
+            }
+        }
+    }
+}
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java>
+        if (requestCode == REQUEST_CODE_EDIT_RECIPE) {
+            if (resultCode == RESULT_OK) {
+                int recipeIndex = data.getIntExtra("recipeIndex", -1);
+                String title = data.getStringExtra("recipeTitle");
+                String description = data.getStringExtra("recipeDescription");
+                byte[] byteArray = data.getByteArrayExtra("recipeImage");
+                Bitmap image = null;
+                if (byteArray != null) {
+                    image = BitmapUtils.byteArrayToBitmap(byteArray);
+                }
+
+                if (recipeIndex == -1) {
+                    // New Recipe
+                    recipes.add(new Recipe(title, description, image));
+                } else {
+                    // Edit existing recipe
+                    Recipe recipe = recipes.get(recipeIndex);
+                    recipe.setTitle(title);
+                    recipe.setDescription(description);
+                    recipe.setImage(image);
+                }
+
+                adapter.notifyDataSetChanged();
+            } else if (resultCode == Activity.RESULT_FIRST_USER) {
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/MainActivity.java>
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        noRecipesText = findViewById(R.id.noRecipesText);
+        ListView listView = findViewById(R.id.recipeListView);
+        Button addRecipeButton = findViewById(R.id.addRecipeButton);
+
+        adapter = new RecipeAdapter(this, recipes);
+        listView.setAdapter(adapter);
+
+        updateNoRecipesText();
+
+        addRecipeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_EDIT_RECIPE);
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+</passage>
+<passage file_path=/app/src/main/res/layout/activity_main.xml>
+<ListView
+        android:id="@+id/recipeListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/addRecipeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="Добавить рецепт" />
+</LinearLayout>
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeDetailActivity.java>
+public class RecipeDetailActivity extends AppCompatActivity {
+
+    private static final int PICK_IMAGE = 1;
+
+    private ImageView recipeImage;
+    private EditText recipeTitle, recipeDescription;
+    private int recipeIndex = -1;
+    private Bitmap selectedImageBitmap = null;
+
+    @Override
+
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeDetailActivity.java>
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == PICK_IMAGE) {
+                Uri selectedImage = data.getData();
+                try {
+                    selectedImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    recipeImage.setImageBitmap(selectedImageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_foreground.xml>
+android:pathData="M16.19 22.05c3.84 0 6.95-3.11 6.95-6.96 0-3.84-3.11-6.96-6.95-6.96-3.84 0-6.96 3.12-6.96 6.96 0 3.85 3.12 6.96 6.96 6.96Z"/>
+            </group>
+            <group>
+                <path
+                    android:fillColor="#FFD9D9D9"
+                    android:strokeColor="#FFB5B5B5"
+                    android:strokeWidth="1"
+                    android:pathData="M30.45 16.18c-0.22-0.43-0.75-0.6-1.18-0.37-0.43 0.22-0.6 0.75-0.38 1.17l3.85 7.48c0.22 0.43 0.75 0.6 1.18 0.38 0.43-0.23 0.6-0.75 0.38-1.18l-3.85-7.48Z"/>
+                <path
+                    android:fillColor="#FFD9D9D9"
+                    android:strokeColor="#FFB5B5B5"
+                    android:strokeWidth="1"
+                    android:pathData="M23.06 5.7l1.1-1.7 6.8 13.2-3.93 1.06-2.76-4.09-1.07-2.08-0.68-2.3-0.02-1.5 0.15-1.26 0.41-1.32Z"/>
+            </group>
+            <group>
+                <path
+                    android:fillColor="#FFD9D9D9"
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/RecipeDetailActivity.java>
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recipe_detail);
+
+        recipeImage = findViewById(R.id.recipeImage);
+        recipeTitle = findViewById(R.id.recipeTitle);
+        recipeDescription = findViewById(R.id.recipeDescription);
+        Button saveButton = findViewById(R.id.saveButton);
+        Button removeButton = findViewById(R.id.removeButton);
+
+        Intent intent = getIntent();
+        recipeIndex = intent.getIntExtra("recipeIndex", -1);
+        if (recipeIndex != -1) {
+            // Existing recipe
+            recipeTitle.setText(intent.getStringExtra("recipeTitle"));
+            recipeDescription.setText(intent.getStringExtra("recipeDescription"));
+            byte[] byteArray = intent.getByteArrayExtra("recipeImage");
+            if (byteArray != null) {
+                selectedImageBitmap = BitmapUtils.byteArrayToBitmap(byteArray);
+                recipeImage.setImageBitmap(selectedImageBitmap);
+            }
+        }
+
+        recipeImage.setOnClickListener(new View.OnClickListener() {
+
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_background.xml>
+android:pathData="M16.19 22.05c3.84 0 6.95-3.11 6.95-6.96 0-3.84-3.11-6.96-6.95-6.96-3.84 0-6.96 3.12-6.96 6.96 0 3.85 3.12 6.96 6.96 6.96Z"/>
+            </group>
+            <group>
+                <path
+                    android:fillColor="#FFD9D9D9"
+                    android:strokeColor="#FFB5B5B5"
+                    android:strokeWidth="1"
+                    android:pathData="M30.45 16.18c-0.22-0.43-0.75-0.6-1.18-0.37-0.43 0.22-0.6 0.75-0.38 1.17l3.85 7.48c0.22 0.43 0.75 0.6 1.18 0.38 0.43-0.23 0.6-0.75 0.38-1.18l-3.85-7.48Z"/>
+                <path
+                    android:fillColor="#FFD9D9D9"
+                    android:strokeColor="#FFB5B5B5"
+                    android:strokeWidth="1"
+                    android:pathData="M23.06 5.7l1.1-1.7 6.8 13.2-3.93 1.06-2.76-4.09-1.07-2.08-0.68-2.3-0.02-1.5 0.15-1.26 0.41-1.32Z"/>
+            </group>
+            <group>
+                <path
+                    android:fillColor="#FFD9D9D9"
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_foreground.xml>
+android:pathData="M10.44 31.43l-8.64-2.3-0.32 1.2 8.64 2.31 0.32-1.2Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M9.26 32.7l-7.43-1.98-0.25 0.93 7.43 1.99 0.25-0.94Z"/>
+                    </group>
+                </group>
+                <group>
+                    <clip-path
+                        android:pathData="m12.8 25.89-14.94-4-1.48 5.52 14.95 4 1.47-5.52Z"/>
+                    <group>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M2.81 23.64l-4.83-1.3-1.29 4.84 4.83 1.29 1.3-4.83Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M11.94 25.9L3.3 23.6l-0.32 1.2 8.63 2.32 0.33-1.21Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_background.xml>
+android:pathData="M10.44 31.43l-8.64-2.3-0.32 1.2 8.64 2.31 0.32-1.2Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M9.26 32.7l-7.43-1.98-0.25 0.93 7.43 1.99 0.25-0.94Z"/>
+                    </group>
+                </group>
+                <group>
+                    <clip-path
+                        android:pathData="m12.8 25.89-14.94-4-1.48 5.52 14.95 4 1.47-5.52Z"/>
+                    <group>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M2.81 23.64l-4.83-1.3-1.29 4.84 4.83 1.29 1.3-4.83Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M11.94 25.9L3.3 23.6l-0.32 1.2 8.63 2.32 0.33-1.21Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+</passage>
+<passage file_path=/app/src/main/res/xml/data_extraction_rules.xml>
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_background.xml>
+<group>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M4.31 18.11l-4.83-1.29-1.3 4.83 4.84 1.3L4.3 18.1Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M14.22 20.6l-9.45-2.52-0.32 1.2 9.45 2.53 0.32-1.2Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M12.23 21.65L4.8 19.67 4.55 20.6l7.43 1.99 0.25-0.94Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M8.9 22.16l-4.47-1.2-0.24 0.91 4.47 1.2 0.24-0.9Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M8.57 23.43l-4.47-1.2-0.25 0.94 4.47 1.2 0.25-0.94Z"/>
+                    </group>
+</passage>
+<passage file_path=/app/src/main/res/drawable/ic_launcher_foreground.xml>
+<group>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M4.31 18.11l-4.83-1.29-1.3 4.83 4.84 1.3L4.3 18.1Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M14.22 20.6l-9.45-2.52-0.32 1.2 9.45 2.53 0.32-1.2Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M12.23 21.65L4.8 19.67 4.55 20.6l7.43 1.99 0.25-0.94Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M8.9 22.16l-4.47-1.2-0.24 0.91 4.47 1.2 0.24-0.9Z"/>
+                        <path
+                            android:fillColor="#FFE5E4BC"
+                            android:pathData="M8.57 23.43l-4.47-1.2-0.25 0.94 4.47 1.2 0.25-0.94Z"/>
+                    </group>
+</passage>
+<passage file_path=/app/src/main/res/layout/activity_recipe_detail.xml>
+android:layout_alignParentEnd="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:hint="Название"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/recipeDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeTitle"
+        android:layout_alignStart="@+id/recipeTitle"
+        android:layout_alignEnd="@+id/recipeTitle"
+        android:layout_marginTop="16dp"
+        android:hint="Описание"
+        android:inputType="textMultiLine"
+        android:minLines="3" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeDescription"
+        android:layout_alignStart="@+id/recipeDescription"
+        android:layout_marginStart="0dp"
+</passage>
+<passage file_path=/app/src/main/res/layout/activity_recipe_detail.xml>
+android:layout_below="@id/recipeDescription"
+        android:layout_alignStart="@+id/recipeDescription"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:text="Сохранить" />
+
+    <Button
+        android:id="@+id/removeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recipeDescription"
+        android:layout_alignEnd="@+id/recipeDescription"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="Убрать" />
+
+</RelativeLayout>
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/Recipe.java>
+package com.kursovaya.receptorganaizer;
+
+import android.graphics.Bitmap;
+
+public class Recipe {
+    private String title;
+    private String description;
+    private Bitmap image;
+
+    public Recipe(String title, String description, Bitmap image) {
+        this.title = title;
+        this.description = description;
+        this.image = image;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
+    }
+}
+
+</passage>
+<passage file_path=/app/src/main/res/layout/recipe_item.xml>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/recipeImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/recipeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_gravity="center_vertical"/>
+</LinearLayout>
+</passage>
+<passage file_path=/app/src/main/res/layout/activity_recipe_detail.xml>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/recipeImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="@android:color/darker_gray" />
+
+    <EditText
+        android:id="@+id/recipeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeImage"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+</passage>
+<passage file_path=/app/src/main/res/xml/backup_rules.xml>
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older that API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+</passage>
+<passage file_path=/app/src/main/java/com/kursovaya/receptorganaizer/BitmapUtils.java>
+package com.kursovaya.receptorganaizer;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.ByteArrayOutputStream;
+
+public class BitmapUtils {
+
+    public static byte[] bitmapToByteArray(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    public static Bitmap byteArrayToBitmap(byte[] byteArray) {
+        if (byteArray == null) {
+            return null;
+        }
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+    }
+}
+
+</passage>

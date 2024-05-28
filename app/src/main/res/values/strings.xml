@@ -1,0 +1,12 @@
+<resources>
+    <string name="ingredientsAndSteps">Ингредиенты и этапы готовки</string>
+    <string name="changeimg">Изменить изображение</string>
+    <string name="title">Например, Домашние маффины</string>
+    <string name="remove">Убрать</string>
+    <string name="Save">Сохранить</string>
+    <string name="changeIMG">Смена изображения</string>
+    <string name="dishTitle">Название для рецепта</string>
+    <string name="AdditionalInfo">Информация</string>
+    <string name="app_name">Recipt Organaizer</string>
+    <string name="addRecipt">Добавить рецепт</string>
+</resources>
