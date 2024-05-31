@@ -7,6 +7,6 @@
     <string name="changeIMG">Смена изображения</string>
     <string name="dishTitle">Название для рецепта</string>
     <string name="AdditionalInfo">Информация</string>
-    <string name="app_name">Recipt Organaizer</string>
+    <string name="app_name">Органайзер рецептов</string>
     <string name="addRecipt">Добавить рецепт</string>
 </resources>
